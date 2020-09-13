@@ -4,14 +4,9 @@ import time
 from numpy import *
 
 
-class Coordinates:
-    replayBtn = (0, 0)
+class Bot:
     dinosaur = (0, 0)
-
-
-def restartGame():
-    pyautogui.click(Coordinates.replayBtn)
-
+    running = False
 
 def pressSpace():
     pyautogui.keyDown("space")
@@ -19,22 +14,27 @@ def pressSpace():
     print("Jump")
     pyautogui.keyUp("space")
 
-
 def imageGrab():
-    box = (Coordinates.dinosaur[0] + 15, Coordinates.dinosaur[1] + 15, Coordinates.dinosaur[0] + 57,
-           Coordinates.dinosaur[1] + 32)
+    box = (Bot.dinosaur[0] + 15, Bot.dinosaur[1] + 15, Bot.dinosaur[0] + 57,
+           Bot.dinosaur[1] + 32)
     image = ImageGrab.grab(box)
     grayImage = ImageOps.grayscale(image)
     a = array(grayImage.getcolors())
     print(a.sum())
 
+def stopBot():
+    Bot.running = False
 
-gay = str(imageGrab())
+def runBot():
+    if Bot.dinosaur == (0, 0):
+        return False
+    pressSpace()
+    Bot.running = True
 
-
-def main():
-    restartGame()
-    while True:
-        if gay != 961:
+    print(Bot.dinosaur)
+    while Bot.running:
+        screen = str(imageGrab())
+        if screen != 961:
             pressSpace()
             time.sleep(0.1)
+

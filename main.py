@@ -1,22 +1,42 @@
 import PySimpleGUI as gui
+from pynput import mouse
 from bot import *
 
+def setUpDinosaur():
+    def on_click(x, y, button, pressed):
+        Bot.dinosaur = (x,y)
+        if not pressed:
+            return False
+    with mouse.Listener(on_click=on_click) as listener:
+        listener.join()
 
 def runGUI():
-    gui.theme('DarkAmber')
-    layout = [[gui.Text('Setup Bot'), gui.Button('Setup')],
-              [gui.Button('Run'), gui.Button('Stop')]]
+    layout = [[gui.Button('Run'), gui.Button('Stop')],
+              [gui.Text('Bot Setup'), gui.Button('Dinosaur Location')]]
 
-    window = gui.Window('Trex Bot', layout)
+    win = gui.Window('Window 1', layout)
+    win.keep_on_top = True
     while True:
-        event, values = window.read()
+        event, values = win.read()
+        if event == gui.WIN_CLOSED:
+            break
         if event == 'Stop':
             stopBot()
             print('Bot Stopped')
-        if event == 'Setup Bot':
-            print('Bot Started')
-            startBot()
+        if event == 'Run':
+            if not runBot():
+                gui.Popup('Error: Please Setup Points!')
+            else:
+                print('Bot Started')
+                runBot()
+
+        if event == 'Dinosaur Location':
+            gui.Popup('Left click on dinosaurs location during game to calibrate. Press OK to start')
+            setUpDinosaur()
+            gui.Popup('Calibrated!')
+            print('getting dinosaur location')
 
 
-    window.close()
 
+
+runGUI()
